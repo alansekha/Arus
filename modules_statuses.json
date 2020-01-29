@@ -1,0 +1,6 @@
+{
+    "Doctor": true,
+    "Laratrust": true,
+    "Patient": true,
+    "Queue": true
+}
