@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Doctor\Http\Controllers;
+namespace Modules\Patient\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 
-class DoctorCategoryController extends Controller
+class patientFamilyMemberController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class DoctorCategoryController extends Controller
      */
     public function index()
     {
-        return view('doctor::index');
+        return view('patient::index');
     }
 
     /**
@@ -23,7 +23,7 @@ class DoctorCategoryController extends Controller
      */
     public function create()
     {
-        return view('doctor::create');
+        return view('patient::create');
     }
 
     /**
@@ -43,7 +43,7 @@ class DoctorCategoryController extends Controller
      */
     public function show($id)
     {
-        return view('doctor::show');
+        return view('patient::show');
     }
 
     /**
@@ -53,7 +53,7 @@ class DoctorCategoryController extends Controller
      */
     public function edit($id)
     {
-        return view('doctor::edit');
+        return view('patient::edit');
     }
 
     /**

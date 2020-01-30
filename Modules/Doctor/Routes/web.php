@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('doctor')->group(function() {
-    Route::get('/', 'DoctorController@index');
-});
+// route::group(['prefix'=>''], function(){
+//     route::resource('doctor_category', 'DoctorCategoryController');
+// });

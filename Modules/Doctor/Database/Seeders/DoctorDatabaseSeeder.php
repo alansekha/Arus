@@ -3,7 +3,6 @@
 namespace Modules\Doctor\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
 
 class DoctorDatabaseSeeder extends Seeder
 {
@@ -14,8 +13,7 @@ class DoctorDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Model::unguard();
-
-        // $this->call("OthersTableSeeder");
+        
+        
     }
 }

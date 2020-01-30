@@ -13,6 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/doctor', function (Request $request) {
-    return $request->user();
+route::group(['prefix'=>'doctor'], function(){
+    route::resource('doctor_category', 'Api\DoctorCategoryController');
+    route::resource('doctor_speciality', 'Api\doctorController');
+    route::resource('doctor_schedule', 'Api\doctorScheduleController');
+});
+
+route::group(['prefix'=>'patient'], function(){
+    route::resource('patient_family', 'Api\DoctorCategoryController');
 });
