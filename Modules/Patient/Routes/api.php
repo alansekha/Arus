@@ -13,6 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/patient', function (Request $request) {
-    return $request->user();
+Route::group(['prefix'=>'patient', 'middleware'=>['jwt.verify']], function () {
+    Route::resource('family_member', 'Api\patientFamilyMemberController');
 });

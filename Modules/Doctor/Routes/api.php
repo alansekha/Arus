@@ -13,8 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
-route::group(['prefix'=>'doctor'], function(){
-    route::resource('doctor_category', 'Api\DoctorCategoryController');
+route::group(['prefix'=>'doctor', 'middleware'=>['jwt.verify']], function(){
+    route::resource('doctor_category', 'Api\doctorCategoryController');
     route::resource('doctor_speciality', 'Api\doctorController');
     route::resource('doctor_schedule', 'Api\doctorScheduleController');
 });
@@ -22,3 +22,5 @@ route::group(['prefix'=>'doctor'], function(){
 route::group(['prefix'=>'patient'], function(){
     route::resource('patient_family', 'Api\DoctorCategoryController');
 });
+
+

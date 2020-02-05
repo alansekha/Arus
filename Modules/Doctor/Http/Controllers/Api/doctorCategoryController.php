@@ -16,7 +16,7 @@ class doctorCategoryController extends Controller
     public function index()
     {
         try {
-            $category = doctor_category::get();
+            $category = doctor_category::paginate(5);
             return response()->json([
                 "message" => "Here you got",
                 "data" => $category
@@ -48,7 +48,7 @@ class doctorCategoryController extends Controller
     {
         try {
             $category = new doctor_category;
-            $category->speciality_name = $request->speciality_name;
+            $category->name = $request->speciality_name;
             $category->save();
             return response()->json([
                 "message" => "Category Successfully add",
@@ -92,7 +92,7 @@ class doctorCategoryController extends Controller
     {
         try {
             $category = doctor_category::find($id);
-            $category->speciality_name = $request->speciality_name;
+            $category->name = $request->speciality_name;
             $category->save();
             return response()->json([
                 "message" => "Category Successfully updated",

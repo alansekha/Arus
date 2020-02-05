@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Doctor\Entities\doctor;
+use Illuminate\Support\Facades\Input;
 
 class doctorController extends Controller
 {
@@ -13,15 +14,16 @@ class doctorController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
             $doctor = doctor::join('users', 'doctors.user_id', '=', 'users.id')
                 ->join('doctor_categories', 'doctors.doctor_category_id', '=', 'doctor_categories.id')
-                ->select('name', 'email', 'phone', 'nik', 'speciality_name')->get();   
+                ->select('users.name as doctorName', 'email', 'phone', 'nik', 'doctor_categories.name as Speciality')
+                ->paginate(5);
+        
             return response()->json([
-                "message" => "Heres the doctor",
-                "doctor" => $doctor
+                "result" => $doctor
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -55,7 +57,7 @@ class doctorController extends Controller
 
             $doctors = doctor::join('users', 'doctors.user_id', '=', 'users.id')->where('user_id', '=', $request->user_id)
                 ->join('doctor_categories', 'doctors.doctor_category_id', '=', 'doctor_categories.id')->where('doctor_category_id', '=', $request->doctor_category_id)
-                ->select('name', 'email', 'phone', 'nik', 'speciality_name')->get(); 
+                ->select('users.name as doctorName', 'email', 'phone', 'nik', 'doctor_categories.name as Speciality')->get(); 
             return response()->json([
                 "Message" => "Doctor successfully Added",
                 "doctor" => $doctors
@@ -63,7 +65,7 @@ class doctorController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 "message" => "Something wrong",
-                "data" => Null
+                "data" => $th->getMessage()
             ], 400);
         }
     }
@@ -113,6 +115,7 @@ class doctorController extends Controller
             $doctor->save();
                 return response()->json([
                     "Message" => "Doctor successfully Deleted",
+                    "data" => $doctor
                 ], 200);
         } catch (\Throwable $th) {
                 return response()->json([
