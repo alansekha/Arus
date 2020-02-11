@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Doctor\Entities\doctor;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 
 class doctorController extends Controller
 {
@@ -17,18 +18,35 @@ class doctorController extends Controller
     public function index(Request $request)
     {
         try {
+            $orderByType = $request->orderByType;
+            $orderBy = $request->orderBy;
+
+            if ($orderBy === null) {
+                $orderBy = 'id';
+            } 
+            
+            if($orderByType === null) {
+                $orderByType = 'ASC';
+            }
+
             $doctor = doctor::join('users', 'doctors.user_id', '=', 'users.id')
                 ->join('doctor_categories', 'doctors.doctor_category_id', '=', 'doctor_categories.id')
-                ->select('users.name as doctorName', 'email', 'phone', 'nik', 'doctor_categories.name as Speciality')
+                ->where('users.name', 'like', "%{$request->search}%")
+                ->orWhere('users.email', 'like', "%{$request->search}%")
+                ->orWhere('users.phone', 'like', "%{$request->search}%")
+                ->orWhere('users.phone', 'like', "%{$request->search}")
+                ->orWhere('users.nik', 'like', "%{$request->search}%")
+                ->orWhere('doctor_categories.name', 'like', "%{$request->search}%")
+                ->orderBy($orderBy,  $orderByType)
+                ->select('doctors.id', 'users.name as doctorName', 'email', 'phone', 'nik', 'doctor_categories.name as Speciality')
                 ->paginate(5);
-        
             return response()->json([
                 "result" => $doctor
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 "message" => "Something wrong",
-                "data" => Null
+                "error" => $th->getMessage()
             ], 400);
         }
     }
@@ -50,6 +68,25 @@ class doctorController extends Controller
     public function store(Request $request)
     {
         try {
+
+            $messages = [
+                'user_id.required' => 'You must input data',
+                'user_id.numeric' => 'User ID must be an Number',
+                'doctor_category_id.required' => 'You must input data',
+                'doctor_category_id.numeric' => 'User ID must be an Number'
+            ];
+
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|numeric',
+                'doctor_category_id' => 'required|numeric'
+            ],$messages);
+
+            if ($validator->fails()) {
+                $this->data['message'] = 'error';
+                $this->data['error'] = $validator->errors();
+                return $this->data;
+            }
+
             $doctor = new Doctor;
             $doctor->user_id = $request->user_id;
             $doctor->doctor_category_id = $request->doctor_category_id;

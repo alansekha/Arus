@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Doctor\Entities\doctor_category;
+use Illuminate\Support\Facades\Validator;
 
 class doctorCategoryController extends Controller
 {
@@ -13,10 +14,22 @@ class doctorCategoryController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $category = doctor_category::paginate(5);
+            $orderByType = $request->orderByType;
+            $orderBy = $request->orderBy;
+
+            if ($orderBy === null) {
+                $orderBy = 'id';
+            } 
+            
+            if($orderByType === null) {
+                $orderByType = 'ASC';
+            }
+
+            $category = doctor_category::where('name', 'like', "%{$request->search}%")
+            ->orderBy($orderBy, $orderByType)->paginate(5);
             return response()->json([
                 "message" => "Here you got",
                 "data" => $category
@@ -24,7 +37,7 @@ class doctorCategoryController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 "message" => "Something Wrong",
-                "data" => Null
+                "error" => $th->getMessage()
             ], 400);
         }
         
@@ -38,7 +51,7 @@ class doctorCategoryController extends Controller
     {
         // 
     }
-
+    
     /**
      * Store a newly created resource in storage.
      * @param Request $request
@@ -47,8 +60,24 @@ class doctorCategoryController extends Controller
     public function store(Request $request)
     {
         try {
+            $messages = [
+                'speciality_name.required' => 'You must input data',
+                'speciality_name.max' => 'name must be less than 255 caracter',
+                'speciality_name.alpha_num' => 'you cant add special caracter'
+            ];
+
+            $validator = Validator::make($request->all(), [
+                'speciality_name' => 'required|alpha_num|max:255',
+            ],$messages);
+
+            if ($validator->fails()) {
+                $this->data['message'] = 'error';
+                $this->data['error'] = $validator->errors();
+                return $this->data;
+            }
+
             $category = new doctor_category;
-            $category->name = $request->speciality_name;
+            $category->name = $request->get('speciality_name');
             $category->save();
             return response()->json([
                 "message" => "Category Successfully add",
@@ -91,6 +120,23 @@ class doctorCategoryController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            
+            $messages = [
+                'speciality_name.required' => 'You must input data',
+                'speciality_name.max' => 'name must be less than 255 caracter',
+                'speciality_name.alpha_num' => 'you cant add special caracter'
+            ];
+
+            $validator = Validator::make($request->all(), [
+                'speciality_name' => 'required|alpha_num|max:255',
+            ],$messages);
+
+            if ($validator->fails()) {
+                $this->data['message'] = 'error';
+                $this->data['error'] = $validator->errors();
+                return $this->data;
+            }
+            
             $category = doctor_category::find($id);
             $category->name = $request->speciality_name;
             $category->save();

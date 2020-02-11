@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/queue', function (Request $request) {
-    return $request->user();
+Route::group(['prefix'=>'queue'], function () {
+    Route::resource('counter', 'Api\CounterController');
+    Route::resource('user_counter', 'Api\UserCounterController');
 });
